@@ -1,5 +1,4 @@
-using System.Collections;
-// using System.Diagnostics;
+using System.Collections; // Necessary for IEnumerator
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -16,6 +15,12 @@ public class PacStudentCollision : MonoBehaviour
     [Header("Teleporters")]
     public Transform teleporterLeftExit;       // Assign TeleporterRight's position
     public Transform teleporterRightExit;      // Assign TeleporterLeft's position
+
+    [Header("Teleport Cooldown")]
+    public float teleportCooldown = 0.5f;     // Cooldown duration in seconds
+
+    // Cooldown Flag
+    private bool canTeleport = true;
 
     // Movement Tracking
     private Vector3 previousPosition;
@@ -39,18 +44,16 @@ public class PacStudentCollision : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        Debug.Log("OnCollisionEnter2D with " + collision.gameObject.tag);
-
         if (collision.gameObject.CompareTag("Wall"))
         {
-            Debug.Log("Collided with Wall");
+            UnityEngine.Debug.Log("Collided with Wall");
             // Reset position to prevent passing through
             transform.position = previousPosition;
 
             // Instantiate wall collision particle effect at collision point
+            ContactPoint2D contact = collision.contacts[0];
             if (wallCollisionParticle != null)
             {
-                ContactPoint2D contact = collision.contacts[0];
                 Instantiate(wallCollisionParticle, contact.point, Quaternion.identity);
             }
 
@@ -63,7 +66,7 @@ public class PacStudentCollision : MonoBehaviour
 
         if (collision.gameObject.CompareTag("Ghost"))
         {
-            Debug.Log("Collided with Ghost");
+            UnityEngine.Debug.Log("Collided with Ghost");
             GhostController ghost = collision.gameObject.GetComponent<GhostController>();
             if (ghost != null && ghost.CurrentState == GhostController.GhostState.Walking)
             {
@@ -90,7 +93,7 @@ public class PacStudentCollision : MonoBehaviour
             }
             else if (ghost != null && (ghost.CurrentState == GhostController.GhostState.Scared || ghost.CurrentState == GhostController.GhostState.Recovering))
             {
-                Debug.Log("Ghost is scared or recovering, ghost will die.");
+                UnityEngine.Debug.Log("Ghost is scared or recovering, ghost will die.");
                 // Ghost enters Dead state
                 ghost.Die();
             }
@@ -99,11 +102,11 @@ public class PacStudentCollision : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log("OnTriggerEnter2D with " + other.gameObject.tag);
+        UnityEngine.Debug.Log("Triggered with " + other.gameObject.tag);
 
         if (other.CompareTag("Pellet"))
         {
-            Debug.Log("Collected Pellet");
+            UnityEngine.Debug.Log("Collected Pellet");
             Destroy(other.gameObject);
             if (GameManager.Instance != null)
             {
@@ -112,7 +115,7 @@ public class PacStudentCollision : MonoBehaviour
         }
         else if (other.CompareTag("PowerPill"))
         {
-            Debug.Log("Collected Power Pill");
+            UnityEngine.Debug.Log("Collected Power Pill");
             Destroy(other.gameObject);
             if (GameManager.Instance != null)
             {
@@ -121,7 +124,7 @@ public class PacStudentCollision : MonoBehaviour
         }
         else if (other.CompareTag("Cherry"))
         {
-            Debug.Log("Collected Cherry");
+            UnityEngine.Debug.Log("Collected Cherry");
             Destroy(other.gameObject);
             if (GameManager.Instance != null)
             {
@@ -130,25 +133,43 @@ public class PacStudentCollision : MonoBehaviour
         }
         else if (other.CompareTag("Teleporter"))
         {
-            Debug.Log("Entered Teleporter");
+            UnityEngine.Debug.Log("Entered Teleporter");
             Teleport(other.gameObject);
         }
     }
 
     private void Teleport(GameObject teleporter)
     {
+        if (!canTeleport)
+        {
+            UnityEngine.Debug.Log("Teleport on cooldown. Teleportation skipped.");
+            return;
+        }
+
+        // Begin Teleportation
+        canTeleport = false;
+
         if (teleporter.name.Contains("Left"))
         {
-            Debug.Log("Teleporting to TeleporterRightExit");
+            UnityEngine.Debug.Log("Teleporting to TeleporterRightExit");
             transform.position = teleporterRightExit.position;
         }
         else if (teleporter.name.Contains("Right"))
         {
-            Debug.Log("Teleporting to TeleporterLeftExit");
+            UnityEngine.Debug.Log("Teleporting to TeleporterLeftExit");
             transform.position = teleporterLeftExit.position;
         }
 
         // Optionally, adjust movement direction here
+
+        // Start Cooldown
+        StartCoroutine(TeleportCooldown());
+    }
+
+    private IEnumerator TeleportCooldown()
+    {
+        yield return new WaitForSeconds(teleportCooldown);
+        canTeleport = true;
     }
 
     private IEnumerator Respawn()
@@ -161,6 +182,7 @@ public class PacStudentCollision : MonoBehaviour
         }
 
         // Wait for player input (e.g., press any key to continue)
+        UnityEngine.Debug.Log("Press any key to respawn...");
         while (!Input.anyKeyDown)
         {
             yield return null;
