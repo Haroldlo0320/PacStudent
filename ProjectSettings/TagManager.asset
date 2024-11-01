@@ -3,7 +3,14 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - PacStudent
+  - Wall
+  - Pellet
+  - PowerPill
+  - Cherry
+  - Teleporter
+  - Ghost
   layers:
   - Default
   - TransparentFX
