@@ -527,6 +527,7 @@ MonoBehaviour:
   deathSound: {fileID: 0}
   teleporterLeftExit: {fileID: 393906016}
   teleporterRightExit: {fileID: 353353332}
+  teleportCooldown: 0.5
 --- !u!1 &353353330
 GameObject:
   m_ObjectHideFlags: 0
@@ -5177,7 +5178,7 @@ Transform:
   m_GameObject: {fileID: 1777816932}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.6, y: -3.6, z: 0}
+  m_LocalPosition: {x: 1.54, y: -4.53, z: 0}
   m_LocalScale: {x: 0.9464112, y: 0.94641113, z: 0.9464112}
   m_ConstrainProportionsScale: 0
   m_Children: []
