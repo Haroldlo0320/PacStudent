@@ -38,15 +38,6 @@ public class StartSceneManager : MonoBehaviour
 
     void LoadLevel2()
     {
-        // Replace "DesignIterationScene" with your actual scene name
-        if (Application.CanStreamedLevelBeLoaded("DesignIterationScene"))
-        {
-            SceneManager.LoadScene("DesignIterationScene");
-        }
-        else
-        {
-            Debug.Log("Design Iteration Scene not available.");
-            // Optionally, display a message to the player
-        }
+        SceneManager.LoadScene("LevelTwo");
     }
 }

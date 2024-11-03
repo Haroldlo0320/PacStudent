@@ -20,7 +20,7 @@ public class CountdownManager : MonoBehaviour
         string[] countdown = { "3", "2", "1", "GO!" };
 
         // Disable player and ghosts movement
-        player.GetComponent<PlayerController>().enabled = false;
+        player.GetComponent<PacStudentController>().enabled = false;
         foreach (GhostController ghost in ghosts)
         {
             ghost.enabled = false;
@@ -35,7 +35,7 @@ public class CountdownManager : MonoBehaviour
         countdownText.gameObject.SetActive(false);
 
         // Enable player and ghosts movement
-        player.GetComponent<PlayerController>().enabled = true;
+        player.GetComponent<PacStudentController>().enabled = true;
         foreach (GhostController ghost in ghosts)
         {
             ghost.enabled = true;

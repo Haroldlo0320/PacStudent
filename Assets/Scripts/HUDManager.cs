@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
 
@@ -8,6 +9,7 @@ public class HUDManager : MonoBehaviour
     [Header("Lives")]
     public Image lifeIndicatorPrefab;
     public Transform livesContainer;
+    public Button exitButton;
 
     [Header("Score")]
     public TextMeshProUGUI scoreText;
@@ -20,12 +22,22 @@ public class HUDManager : MonoBehaviour
     public TextMeshProUGUI gameOverText;
 
     private int lives = 3;
+    
 
     void Start()
     {
+        if (exitButton != null)
+            exitButton.onClick.AddListener(ExitToStart);
+        
         InitializeLives();
         ghostScaredTimerText.gameObject.SetActive(false);
         gameOverText.gameObject.SetActive(false);
+
+    }
+
+    void ExitToStart()
+    {
+        SceneManager.LoadScene("StartScene");
     }
 
     void InitializeLives()

@@ -1,5 +1,6 @@
 using System.Collections; // Necessary for IEnumerator
 using UnityEngine;
+using UnityEngine.Tilemaps;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -44,6 +45,32 @@ public class PacStudentCollision : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        // Get the Tilemap component
+        Tilemap wallTilemap = GameObject.Find("Wall").GetComponent<Tilemap>();
+
+        // Get the tile at the collision point
+        Vector3Int tilePosition = wallTilemap.WorldToCell(collision.contacts[0].point);
+        TileBase tile = wallTilemap.GetTile(tilePosition);
+
+        // Check if the tile is a wall tile
+        if (tile != null)
+        {
+            UnityEngine.Debug.Log("Collided with Wall");
+            // Reset position to prevent passing through
+            transform.position = previousPosition;
+
+            // Instantiate wall collision particle effect at collision point
+            if (wallCollisionParticle != null)
+            {
+                Instantiate(wallCollisionParticle, collision.contacts[0].point, Quaternion.identity);
+            }
+
+            // Play wall collision sound
+            if (wallCollisionSound != null)
+            {
+                audioSource.PlayOneShot(wallCollisionSound);
+            }
+        }
         if (collision.gameObject.CompareTag("Wall"))
         {
             UnityEngine.Debug.Log("Collided with Wall");
@@ -131,6 +158,7 @@ public class PacStudentCollision : MonoBehaviour
                 GameManager.Instance.AddScore(100);
             }
         }
+        
         else if (other.CompareTag("Teleporter"))
         {
             UnityEngine.Debug.Log("Entered Teleporter");
@@ -175,10 +203,10 @@ public class PacStudentCollision : MonoBehaviour
     private IEnumerator Respawn()
     {
         // Disable PacStudent controls
-        PlayerController playerController = GetComponent<PlayerController>();
-        if (playerController != null)
+        PacStudentController PacStudentController = GetComponent<PacStudentController>();
+        if (PacStudentController != null)
         {
-            playerController.enabled = false;
+            PacStudentController.enabled = false;
         }
 
         // Wait for player input (e.g., press any key to continue)
@@ -192,9 +220,9 @@ public class PacStudentCollision : MonoBehaviour
         transform.position = new Vector3(-9f, 0f, 0f); // Adjust based on your start position
 
         // Enable PacStudent controls
-        if (playerController != null)
+        if (PacStudentController != null)
         {
-            playerController.enabled = true;
+            PacStudentController.enabled = true;
         }
     }
 }
